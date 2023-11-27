@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Pressable, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useNavigation } from '@react-navigation/native';
 
 function Notes() {
-  const navigation = useNavigation();
   const [tasks, setTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
   const [taskText, setTaskText] = useState('');

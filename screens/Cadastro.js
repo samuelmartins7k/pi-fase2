@@ -1,16 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+import { TextInputMask } from 'react-native-masked-text';
+import { useAuth } from '../contexts/AuthContext'; 
 
 const Cadastro = () => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
+  const { setUser } = useAuth(); // Use o contexto de autenticação
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [telefone, setTelefone] = useState('');
 
   const handleCadastroPress = () => {
-    // Aqui você pode adicionar a lógica de cadastro, por enquanto, exibirei um alerta
-    Alert.alert('Cadastro', 'Pressionou o botão "Cadastrar".');
-        // Use o método navigate para direcionar para a tela de "Cadastro"
-        navigation.navigate('PerfilUsuario');
+    // Validações
+    if (senha.length < 6) {
+      Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+
+    // Lógica de cadastro (substitua isso pela sua lógica real)
+    // ...
+
+    // Simulação de cadastro bem-sucedido
+    const usuarioCadastrado = {
+      nome,
+      email,
+      telefone,
+    };
+
+    // Salve o usuário no contexto
+    setUser(usuarioCadastrado);
+
+    // Exibindo alerta temporário para simular o cadastro bem-sucedido
+    Alert.alert('Cadastro', 'Cadastro realizado com sucesso.');
+
+    // Use o método navigate para direcionar para a tela de "PerfilUsuario"
+    navigation.navigate('PerfilUsuario');
   };
 
   return (
@@ -20,20 +46,35 @@ const Cadastro = () => {
       <TextInput
         style={estilos.input}
         placeholder={'Nome'}
+        value={nome}
+        onChangeText={setNome}
       />
       <TextInput
         style={estilos.input}
         placeholder={'E-mail'}
         keyboardType={'email-address'}
+        value={email}
+        onChangeText={setEmail}
       />
       <TextInput
         style={estilos.input}
-        placeholder={'Senha'}
+        placeholder={'Senha (mínimo 6 caracteres)'}
         secureTextEntry={true}
+        value={senha}
+        onChangeText={setSenha}
       />
-      <TextInput
+      <TextInputMask
         style={estilos.input}
-        placeholder={'Telefone'}
+        placeholder={'Telefone (com DDD)'}
+        keyboardType={'phone-pad'}
+        type={'cel-phone'}
+        options={{
+          maskType: 'BRL',
+          withDDD: true,
+          dddMask: '(99) ',
+        }}
+        value={telefone}
+        onChangeText={setTelefone}
       />
       <Button title="Cadastrar" onPress={handleCadastroPress} />
     </View>

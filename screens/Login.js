@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../contexts/AuthContext'; 
 
 function Login() {
   const navigation = useNavigation();
+  const { setUser } = useAuth();
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
 
   const handleCadastrarPress = () => {
-    // Use o método navigate para direcionar para a tela de "Cadastro"
     navigation.navigate('Cadastro');
   };
 
@@ -15,8 +19,42 @@ function Login() {
   };
 
   const handleEntrarPress = () => {
-    // Navegue para a tela de notas quando o botão "Entrar" for pressionado
-    navigation.navigate('Notes');
+    // Simulação de autenticação (substitua isso por sua lógica real)
+    if (validarCampos()) {
+      const usuarioFicticio = {
+        nome: 'Nome do Usuário',
+        email: 'usuario@email.com',
+      };
+
+      // Defina o usuário no contexto
+      setUser(usuarioFicticio);
+
+      // Navegue para a tela de notas
+      navigation.navigate('Notes');
+    }
+  };
+
+  const validarCampos = () => {
+    if (!email || !senha) {
+      setErro('Por favor, preencha todos os campos.');
+      return false;
+    }
+
+    // Simulação de validação de e-mail (substitua isso por sua lógica real)
+    const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailValido) {
+      setErro('Por favor, insira um e-mail válido.');
+      return false;
+    }
+
+    // Simulação de validação de senha (substitua isso por sua lógica real)
+    if (senha.length < 6) {
+      setErro('A senha deve ter pelo menos 6 caracteres.');
+      return false;
+    }
+
+    setErro('');
+    return true;
   };
 
   return (
@@ -28,12 +66,17 @@ function Login() {
         style={estilos.input}
         placeholder={'E-mail'}
         keyboardType={'email-address'}
+        value={email}
+        onChangeText={setEmail}
       />
       <TextInput
         style={estilos.input}
         placeholder={'Senha'}
         secureTextEntry={true}
+        value={senha}
+        onChangeText={setSenha}
       />
+      {erro !== '' && <Text style={estilos.erroText}>{erro}</Text>}
       <TouchableOpacity style={estilos.button} onPress={handleEntrarPress}>
         <Text style={estilos.buttonText}>Entrar</Text>
       </TouchableOpacity>
@@ -68,7 +111,7 @@ const estilos = StyleSheet.create({
     marginBottom: 24,
   },
   input: {
-    height: 40, // Altura ajustada conforme necessário
+    height: 40,
     borderBottomWidth: 1,
     borderBottomColor: 'black',
     marginBottom: 16,
@@ -80,19 +123,19 @@ const estilos = StyleSheet.create({
     marginTop: 24,
   },
   button: {
-    backgroundColor: 'blue', // Cor de fundo ajustada conforme necessário
+    backgroundColor: 'blue',
     paddingVertical: 10,
     borderRadius: 5,
   },
   buttonText: {
-    color: 'white', // Cor do texto ajustada conforme necessário
+    color: 'white',
     textAlign: 'center',
     fontWeight: 'bold',
   },
   cadastrarText: {
     textAlign: 'center',
     marginTop: 10,
-    color: 'blue', // Cor do texto ajustada conforme necessário
+    color: 'blue',
     fontWeight: 'bold',
   },
   esqueceuSenha: {
@@ -100,6 +143,11 @@ const estilos = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginTop: 24,
+  },
+  erroText: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 10,
   },
 });
 

@@ -1,8 +1,10 @@
 import React from "react";
 import { StyleSheet, Image, Text, View, Button, Alert } from "react-native";
-
+import { useAuth } from '../contexts/AuthContext'; 
 
 export default function PerfilUsuario() {
+  const { user, logout } = useAuth();
+
   const handleEditarDados = () => {
     // Adicione aqui a lógica para editar dados do usuário
     Alert.alert("Editar Dados", "Pressionou o botão 'Editar Dados'");
@@ -10,7 +12,7 @@ export default function PerfilUsuario() {
 
   const handleSairDaConta = () => {
     // Adicione aqui a lógica para sair da conta
-    Alert.alert("Sair da Conta", "Pressionou o botão 'Sair da Conta'");
+    logout(); // Chamando a função de logout do contexto
   };
 
   return (
@@ -29,20 +31,17 @@ export default function PerfilUsuario() {
       <View style={styles.informacoes}>
         <View style={styles.informacao}>
           <Text style={styles.label}>Seu Nome</Text>
-          <Text style={styles.valor}>Nome do Usuário</Text>
+          <Text style={styles.valor}>{user?.nome}</Text>
         </View>
         <View style={styles.informacao}>
           <Text style={styles.label}>Email</Text>
-          <Text style={styles.valor}>email@example.com</Text>
+          <Text style={styles.valor}>{user?.email}</Text>
         </View>
         <View style={styles.informacao}>
           <Text style={styles.label}>Telefone</Text>
-          <Text style={styles.valor}>123-456-7890</Text>
+          <Text style={styles.valor}>{user?.telefone}</Text>
         </View>
-        <View style={styles.informacao}>
-          <Text style={styles.label}>Senha</Text>
-          <Text style={styles.valor}>********</Text>
-        </View>
+        {/* Adicione mais campos conforme necessário */}
       </View>
 
       <View style={styles.opcoes}>
@@ -87,11 +86,11 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: "bold",
+    marginBottom: 8, // Adicionando margem inferior entre o rótulo e o valor
   },
   valor: {
     fontSize: 18,
   },
-
   opcoes: {
     flexDirection: "row",
     alignItems: "center",
