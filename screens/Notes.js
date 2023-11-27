@@ -2,11 +2,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { NotesProvider, useNotes } from '../contexts/NotesContexts';
+import { useNotes } from '../contexts/NotesContexts';
+import { useNavigation } from '@react-navigation/native';
 
 const NotesScreen = () => {
   const { notes, addNote, toggleNote, deleteCompletedNotes } = useNotes();
   const [newNote, setNewNote] = useState('');
+  const navigation = useNavigation();
 
   const handleAddNote = () => {
     if (newNote.trim() !== '') {
@@ -37,8 +39,30 @@ const NotesScreen = () => {
     );
   };
 
+  const renderDeleteButton = () => {
+    if (notes.length > 0) {
+      return (
+        <TouchableOpacity style={styles.deleteCompletedButton} onPress={confirmDeleteCompletedNotes}>
+          <Text style={styles.deleteCompletedButtonText}>Excluir Notas Concluídas</Text>
+        </TouchableOpacity>
+      );
+    }
+    return null;
+  };
+
   return (
     <View style={{ flex: 1, padding: 16 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', flex: 1, textAlign: 'center' }}>Minhas Notas</Text>
+        {/* Ícone de perfil do usuário para navegar para a tela de perfil */}
+        <TouchableOpacity
+          style={styles.profileIcon}
+          onPress={() => navigation.navigate('PerfilUsuario')}
+        >
+          <Feather name="user" size={30} color="black" />
+        </TouchableOpacity>
+      </View>
+
       <View style={{ marginBottom: 16 }}>
         <TextInput
           style={styles.input}
@@ -76,19 +100,8 @@ const NotesScreen = () => {
         )}
       />
 
-      <TouchableOpacity style={styles.deleteCompletedButton} onPress={confirmDeleteCompletedNotes}>
-        <Text style={styles.deleteCompletedButtonText}>Excluir Notas Concluídas</Text>
-      </TouchableOpacity>
+      {renderDeleteButton()}
     </View>
-  );
-};
-
-// Wrap da tela no provedor de contexto
-const Notes = () => {
-  return (
-    <NotesProvider>
-      <NotesScreen />
-    </NotesProvider>
   );
 };
 
@@ -138,6 +151,11 @@ const styles = {
     color: 'white',
     fontSize: 16,
   },
+  profileIcon: {
+    position: 'absolute',
+    top: 1,
+    right: 20,
+  },
 };
 
-export default Notes;
+export default NotesScreen;
