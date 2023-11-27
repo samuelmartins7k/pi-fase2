@@ -1,18 +1,25 @@
+// screens/RecuperarSenha.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { useAuth } from '../contexts/AuthContext'; // Certifique-se de ajustar o caminho conforme necessário
 
 function RecuperarSenha() {
   const [email, setEmail] = useState('');
+  const { resetPassword } = useAuth(); // Adicione a função de recuperação de senha do contexto
 
-  const handleRecuperarSenhaPress = () => {
+  const handleRecuperarSenhaPress = async () => {
     if (!email) {
       Alert.alert('Erro', 'Por favor, insira seu endereço de e-mail.');
       return;
     }
 
-    // Aqui você pode implementar a lógica real de recuperação de senha, como enviar um e-mail com um link de recuperação.
-
-    Alert.alert('Recuperação de Senha', 'Um e-mail de recuperação foi enviado para ' + email);
+    try {
+      await resetPassword(email);
+      Alert.alert('Recuperação de Senha', 'Um e-mail de recuperação foi enviado para ' + email);
+    } catch (error) {
+      Alert.alert('Erro', 'Houve um problema ao enviar o e-mail de recuperação.');
+      console.error('Erro ao recuperar senha:', error.message);
+    }
   };
 
   return (
@@ -46,7 +53,7 @@ const estilos = StyleSheet.create({
     height: 40,
     borderBottomWidth: 1,
     borderBottomColor: 'black',
-    marginBottom: 16,
+    marginBottom: 20,
   },
 });
 
