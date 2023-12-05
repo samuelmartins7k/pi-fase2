@@ -2,41 +2,43 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { TextInputMask } from 'react-native-masked-text';
-import { useAuth } from '../contexts/AuthContext'; 
+import { useAuth } from '../contexts/AuthContext';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../Services/firebaseConfig';
 
 const Cadastro = () => {
   const navigation = useNavigation();
-  const { setUser } = useAuth(); // Use o contexto de autenticação
+  const { setUser } = useAuth();
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [telefone, setTelefone] = useState('');
 
-  const handleCadastroPress = () => {
-    // Validações
-    if (senha.length < 6) {
-      Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres.');
-      return;
+  const handleCadastroPress = async () => {
+    try {
+      if (senha.length < 6) {
+        Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres.');
+        return;
+      }
+
+      const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+      const user = userCredential.user;
+
+      const usuarioCadastrado = {
+        nome,
+        email,
+        telefone,
+        uid: user.uid,
+      };
+
+      setUser(usuarioCadastrado);
+
+      Alert.alert('Cadastro', 'Cadastro realizado com sucesso.');
+      navigation.navigate('PerfilUsuario');
+    } catch (error) {
+      console.error('Erro ao criar usuário:', error.message);
+      Alert.alert('Erro', 'Houve um erro ao criar o usuário. Por favor, tente novamente.');
     }
-
-    // Lógica de cadastro (substitua isso pela sua lógica real)
-    // ...
-
-    // Simulação de cadastro bem-sucedido
-    const usuarioCadastrado = {
-      nome,
-      email,
-      telefone,
-    };
-
-    // Salve o usuário no contexto
-    setUser(usuarioCadastrado);
-
-    // Exibindo alerta temporário para simular o cadastro bem-sucedido
-    Alert.alert('Cadastro', 'Cadastro realizado com sucesso.');
-
-    // Use o método navigate para direcionar para a tela de "PerfilUsuario"
-    navigation.navigate('PerfilUsuario');
   };
 
   return (
@@ -108,4 +110,4 @@ const estilos = StyleSheet.create({
   },
 });
 
-export default Cadastro;
+export default Cadastro;""

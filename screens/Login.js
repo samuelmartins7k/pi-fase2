@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../contexts/AuthContext'; 
+import { useAuth } from '../contexts/AuthContext';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../Services/firebaseConfig';
 
 function Login() {
   const navigation = useNavigation();
@@ -18,19 +20,26 @@ function Login() {
     navigation.navigate('RecuperarSenha');
   };
 
-  const handleEntrarPress = () => {
-    // Simulação de autenticação (substitua isso por sua lógica real)
-    if (validarCampos()) {
-      const usuarioFicticio = {
-        nome: 'Nome do Usuário',
-        email: 'usuario@email.com',
-      };
+  const handleEntrarPress = async () => {
+    try {
+      if (validarCampos()) {
+        // Autenticação real com Firebase
+        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
 
-      // Defina o usuário no contexto
-      setUser(usuarioFicticio);
+        // Defina o usuário no contexto
+        setUser({
+          nome: user.displayName,
+          email: user.email,
+          // Adicione outros dados do usuário conforme necessário
+        });
 
-      // Navegue para a tela de notas
-      navigation.navigate('Notes');
+        // Navegue para a tela de notas
+        navigation.navigate('Notes');
+      }
+    } catch (error) {
+      console.error('Erro ao fazer login:', error.message);
+      setErro('Credenciais inválidas. Verifique seu e-mail e senha.');
     }
   };
 
@@ -40,14 +49,12 @@ function Login() {
       return false;
     }
 
-    // Simulação de validação de e-mail (substitua isso por sua lógica real)
     const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!emailValido) {
       setErro('Por favor, insira um e-mail válido.');
       return false;
     }
 
-    // Simulação de validação de senha (substitua isso por sua lógica real)
     if (senha.length < 6) {
       setErro('A senha deve ter pelo menos 6 caracteres.');
       return false;
